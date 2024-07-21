@@ -7,7 +7,7 @@ export default function Home() {
   const { data: session } = useSession();
 
   useEffect(() => {
-    console.log("the id", process.env.GOOGLE_CLIENT_ID);
+    console.log("the id", process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID);
   }, []);
 
   return (
