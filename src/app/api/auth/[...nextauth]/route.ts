@@ -1,3 +1,4 @@
+import { linkGithubAccount } from "@/lib/db";
 import NextAuth from "next-auth";
 import Github from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
@@ -22,16 +23,15 @@ declare module "next-auth" {
 
 // });
 
-
 const pool = new Pool({
   host: process.env.NEXT_PUBLIC_DB_HOST,
-  port: parseInt(process.env.NEXT_PUBLIC_DB_PORT || '5432'),
+  port: parseInt(process.env.NEXT_PUBLIC_DB_PORT || "5432"),
   user: process.env.NEXT_PUBLIC_DB_USER,
   password: process.env.NEXT_PUBLIC_DB_PASSWORD,
   database: process.env.NEXT_PUBLIC_DB_NAME,
   ssl: {
-    rejectUnauthorized: false // Use this only if you're having SSL issues and understand the security implications
-  }
+    rejectUnauthorized: false, // Use this only if you're having SSL issues and understand the security implications
+  },
 });
 
 const handler = NextAuth({
@@ -52,16 +52,41 @@ const handler = NextAuth({
   ],
   callbacks: {
     async signIn({ user, account, profile }) {
-      console.log('database connection string', process.env.NEXT_PUBLIC_DATABASE_URL)
       if (account?.provider === "google") {
         try {
           const { rows } = await pool.query(
-            'INSERT INTO users (username, email) VALUES ($1, $2) ON CONFLICT (email) DO UPDATE SET username = $1 RETURNING *',
+            "INSERT INTO users (username, email) VALUES ($1, $2) ON CONFLICT (email) DO UPDATE SET username = $1 RETURNING *",
             [user.name, user.email]
           );
           console.log("User upserted:", rows[0]);
         } catch (error) {
           console.error("Error upserting user:", error);
+          return false;
+        }
+      } else if (account?.provider === "github" && profile) {
+        try {
+          const userEmail = user.email ?? profile.email ?? account.email;
+          const { rows } = await pool.query(
+            "SELECT * FROM users WHERE email = $1",
+            [userEmail]
+          );
+          console.log("providerAccountId", account.provider);
+          if (rows.length > 0) {
+            const userId = rows[0]?.id;
+            await linkGithubAccount(
+              userId,
+              account.providerAccountId,
+              profile.name || "",
+              profile.image || ""
+            );
+          } else {
+            console.error("User not found for GitHub account", userEmail);
+            console.error("rows ", rows);
+
+            return false;
+          }
+        } catch (error) {
+          console.error("Error linking GitHub account:", error);
           return false;
         }
       }

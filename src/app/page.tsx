@@ -10,7 +10,8 @@ import {
 } from "@/components/ui/card";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import {  RepoSelector, Repository } from "./components/RepoSelector";
+import { RepoSelector, Repository } from "./components/RepoSelector";
+import { getGithubAccount } from "@/lib/db";
 
 type GithubInfo = {
   connected: boolean;
@@ -25,15 +26,25 @@ export default function Home() {
   const [selectedRepo, setSelectedRepo] = useState<Repository | null>(null);
 
   useEffect(() => {
-    console.log("Full Session:", JSON.stringify(session, null, 2));
-    if (session?.user?.githubConnected) {
-      setGithubInfo({
-        connected: true,
-        username: session.user.githubUsername,
-      });
-    } else {
-      setGithubInfo(null);
+    async function fetchGithubInfo() {
+      if (session?.user?.id) {
+        try {
+          const githubAccount = await getGithubAccount(session.user.id);
+          if (githubAccount) {
+            setGithubInfo({
+              connected: true,
+              username: githubAccount.github_username,
+            });
+          } else {
+            setGithubInfo(null);
+          }
+        } catch (error) {
+          console.error("Error fetching GitHub info:", error);
+          setGithubInfo(null);
+        }
+      }
     }
+    fetchGithubInfo();
   }, [session]);
 
   const handleGithubConnect = async () => {
