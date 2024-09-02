@@ -1,0 +1,15 @@
+paas-frontend is a Next.js 14 app that uses shadcn, tailwind, and strictly typed typescript. 
+my app is called meow-paas. 
+
+don't be lazy, write all the code to implement the features i ask for. 
+
+i am using postgresql hosted on aws rds as my database. 
+
+i use next-auth for authentication. 
+
+in my frontend, users are able to auth using google. then, later in the flow,
+after they are aleady signed in using google, they are able to sign in using github
+so they can connect their repos to their account and deploy them. 
+when a new users signins for the first time, i create an entry for them in the postgres table called users. 
+it populates it with name, and username. the id is created by posgtgres (autoincrements)
+

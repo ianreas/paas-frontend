@@ -1,163 +1,7 @@
-// number 1)
-// import NextAuth from "next-auth";
-// import Github from "next-auth/providers/github";
-// import Google from "next-auth/providers/google";
-
-// declare module "next-auth" {
-//   interface Session {
-//     accessToken?: string;
-//   }
-// }
-
-// const handler = NextAuth({
-//   providers: [
-//     Google({
-//       clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? "",
-//       clientSecret: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_SECRET ?? "",
-//     }),
-//     Github({
-//       clientId: process.env.GITHUB_ID ?? "Ov23liMRAfjQ8vbmGNdK",
-//       clientSecret: process.env.GITHUB_SECRET ?? "4e21397dbb477c9016765c51278aa5f7718bcd61",
-//       authorization: {
-//         params: {
-//           scope: "read:user repo",
-//         },
-//       },
-//     }),
-//   ],
-//   callbacks: {
-//     async jwt({ token, account }) {
-//       if (account) {
-//         token.accessToken = account.access_token;
-//       }
-//       return token;
-//     },
-//     async session({ session, token }) {
-//       session.accessToken = token.accessToken as string;
-//       return session;
-//     },
-//   },
-// });
-
-// export { handler as GET, handler as POST };
-
-// number 2)
-// import NextAuth from "next-auth";
-// import Github from "next-auth/providers/github";
-// import Google from "next-auth/providers/google";
-
-// declare module "next-auth" {
-//   interface Session {
-//     accessToken?: string;
-//     user: {
-//       id: string;
-//       email: string;
-//       name: string;
-//       image: string;
-//       githubConnected?: boolean;
-//     };
-//   }
-// }
-
-// const handler = NextAuth({
-//   providers: [
-//     Google({
-//       clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? "",
-//       clientSecret: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_SECRET ?? "",
-//     }),
-//     Github({
-//       clientId: process.env.GITHUB_ID ?? "",
-//       clientSecret: process.env.GITHUB_SECRET ?? "",
-//       authorization: {
-//         params: {
-//           scope: "read:user repo",
-//         },
-//       },
-//     }),
-//   ],
-//   callbacks: {
-//     async jwt({ token, account, profile }) {
-//       if (account) {
-//         token.accessToken = account.access_token;
-//         if (account.provider === "github") {
-//           token.githubConnected = true;
-//         }
-//       }
-//       return token;
-//     },
-//     async session({ session, token }) {
-//       session.accessToken = token.accessToken as string;
-//       session.user.githubConnected = token.githubConnected as boolean;
-//       return session;
-//     },
-//   },
-// });
-
-// export { handler as GET, handler as POST };
-
-
-// number 3) 
-// import NextAuth from "next-auth";
-// import Github from "next-auth/providers/github";
-// import Google from "next-auth/providers/google";
-
-// declare module "next-auth" {
-//   interface Session {
-//     accessToken?: string;
-//     user: {
-//       id: string;
-//       email: string;
-//       name: string;
-//       image: string;
-//       githubConnected?: boolean;
-//     };
-//   }
-// }
-
-// const handler = NextAuth({
-//   providers: [
-//     Google({
-//       clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? "",
-//       clientSecret: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_SECRET ?? "",
-//     }),
-//     Github({
-//       clientId: process.env.GITHUB_ID ?? "",
-//       clientSecret: process.env.GITHUB_SECRET ?? "",
-//       authorization: {
-//         params: {
-//           scope: "read:user repo",
-//         },
-//       },
-//     }),
-//   ],
-//   callbacks: {
-//     async jwt({ token, account, profile }) {
-//       if (account) {
-//         token.accessToken = account.access_token;
-//         if (account.provider === 'github') {
-//           token.githubConnected = true;
-//         }
-//       }
-//       return token;
-//     },
-//     async session({ session, token }) {
-//       session.accessToken = token.accessToken as string;
-//       session.user.githubConnected = token.githubConnected as boolean;
-//       return session;
-//     },
-//   },
-//   pages: {
-//     signIn: '/auth/signin',
-//   },
-// });
-
-// export { handler as GET, handler as POST };
-
-
-//number 4) 
 import NextAuth from "next-auth";
 import Github from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
+import { Pool } from "pg";
 
 declare module "next-auth" {
   interface Session {
@@ -173,6 +17,23 @@ declare module "next-auth" {
   }
 }
 
+// const pool = new Pool({
+//   connectionString: process.env.NEXT_PUBLIC_DATABASE_URL,
+
+// });
+
+
+const pool = new Pool({
+  host: process.env.NEXT_PUBLIC_DB_HOST,
+  port: parseInt(process.env.NEXT_PUBLIC_DB_PORT || '5432'),
+  user: process.env.NEXT_PUBLIC_DB_USER,
+  password: process.env.NEXT_PUBLIC_DB_PASSWORD,
+  database: process.env.NEXT_PUBLIC_DB_NAME,
+  ssl: {
+    rejectUnauthorized: false // Use this only if you're having SSL issues and understand the security implications
+  }
+});
+
 const handler = NextAuth({
   providers: [
     Google({
@@ -181,7 +42,7 @@ const handler = NextAuth({
     }),
     Github({
       clientId: "Ov23liMRAfjQ8vbmGNdK",
-      clientSecret: "3be85463ce1c9b10241fd3de910c4bd3b8bec214",//process.env.GITHUB_SECRET ?? "",
+      clientSecret: "3be85463ce1c9b10241fd3de910c4bd3b8bec214", //process.env.GITHUB_SECRET ?? "",
       authorization: {
         params: {
           scope: "read:user repo",
@@ -190,12 +51,28 @@ const handler = NextAuth({
     }),
   ],
   callbacks: {
+    async signIn({ user, account, profile }) {
+      console.log('database connection string', process.env.NEXT_PUBLIC_DATABASE_URL)
+      if (account?.provider === "google") {
+        try {
+          const { rows } = await pool.query(
+            'INSERT INTO users (username, email) VALUES ($1, $2) ON CONFLICT (email) DO UPDATE SET username = $1 RETURNING *',
+            [user.name, user.email]
+          );
+          console.log("User upserted:", rows[0]);
+        } catch (error) {
+          console.error("Error upserting user:", error);
+          return false;
+        }
+      }
+      return true;
+    },
     async jwt({ token, account, profile }) {
       if (account) {
         token.accessToken = account.access_token;
-        if (account.provider === 'github') {
+        if (account.provider === "github") {
           token.githubConnected = true;
-          token.githubUsername = profile?.name  // GitHub username is in profile.login, not profile.name
+          token.githubUsername = profile?.name; // GitHub username is in profile.login, not profile.name
         }
       }
       return token;
@@ -208,7 +85,7 @@ const handler = NextAuth({
     },
   },
   pages: {
-    signIn: '/auth/signin',
+    signIn: "/auth/signin",
   },
 });
 
