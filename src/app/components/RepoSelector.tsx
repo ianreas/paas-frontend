@@ -16,6 +16,7 @@ export function RepoSelector({ onSelectRepo }: { onSelectRepo: (repo: Repository
   const [selectedRepo, setSelectedRepo] = useState<Repository | null>(null);
 
   useEffect(() => {
+    console.log('the session', session);
     if (session?.accessToken) {
       fetchRepos();
     }
@@ -52,7 +53,7 @@ export function RepoSelector({ onSelectRepo }: { onSelectRepo: (repo: Repository
   return (
     <Card className="w-[350px] mx-auto mt-4">
       <CardHeader>
-        <CardTitle>Select Repository to Deploy</CardTitle>
+        <CardTitle>Deploy a new application</CardTitle>
       </CardHeader>
       <CardContent>
         <Select onValueChange={handleSelectRepo}>

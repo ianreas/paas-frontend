@@ -10,38 +10,18 @@ import {
 } from "@/components/ui/card";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import {  RepoSelector, Repository } from "./components/RepoSelector";
-
-type GithubInfo = {
-  connected: boolean;
-  username: string | undefined;
-} | null;
-
-const BACKEND_URL = "http://localhost:3005";
+import { RepoSelector, Repository } from "./components/RepoSelector";
 
 export default function Home() {
   const { data: session, update } = useSession();
-  const [githubInfo, setGithubInfo] = useState<GithubInfo>(null);
   const [selectedRepo, setSelectedRepo] = useState<Repository | null>(null);
-
-  useEffect(() => {
-    console.log("Full Session:", JSON.stringify(session, null, 2));
-    if (session?.user?.githubConnected) {
-      setGithubInfo({
-        connected: true,
-        username: session.user.githubUsername,
-      });
-    } else {
-      setGithubInfo(null);
-    }
-  }, [session]);
 
   const handleGithubConnect = async () => {
     const result = await signIn("github", { redirect: false });
     if (result?.error) {
       console.error("GitHub sign-in error:", result.error);
     } else {
-      await update(); // Force session update
+      await update();
     }
   };
 
@@ -62,8 +42,9 @@ export default function Home() {
           {session ? (
             <>
               <p className="mb-4">Signed in as {session.user.email}</p>
-              {githubInfo ? (
-                <p className="mb-4">GitHub connected: {githubInfo.username}</p>
+              <p className="mb-4">Username: {session.user.username}</p>
+              {session.user.githubUsername ? (
+                <p className="mb-4">GitHub connected: {session.user.githubUsername}</p>
               ) : (
                 <Button onClick={handleGithubConnect} className="w-full mb-2">
                   Connect GitHub
@@ -85,7 +66,7 @@ export default function Home() {
         </CardContent>
       </Card>
 
-      {githubInfo && <RepoSelector onSelectRepo={handleSelectRepo} />}
+      {session?.user.githubUsername && <RepoSelector onSelectRepo={handleSelectRepo} />}
       
       {selectedRepo && (
         <Card className="w-[350px] mx-auto mt-4">
