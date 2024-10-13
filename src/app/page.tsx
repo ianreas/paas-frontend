@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { RepoSelector, Repository } from "./components/RepoSelector";
 
 export default function Home() {
@@ -44,7 +44,9 @@ export default function Home() {
               <p className="mb-4">Signed in as {session.user.email}</p>
               <p className="mb-4">Username: {session.user.username}</p>
               {session.user.githubUsername ? (
-                <p className="mb-4">GitHub connected: {session.user.githubUsername}</p>
+                <p className="mb-4">
+                  GitHub connected: {session.user.githubUsername}
+                </p>
               ) : (
                 <Button onClick={handleGithubConnect} className="w-full mb-2">
                   Connect GitHub
@@ -66,8 +68,10 @@ export default function Home() {
         </CardContent>
       </Card>
 
-      {session?.user.githubUsername && <RepoSelector onSelectRepo={handleSelectRepo} />}
-      
+      {session?.user.githubUsername && (
+        <RepoSelector onSelectRepo={handleSelectRepo} />
+      )}
+
       {selectedRepo && (
         <Card className="w-[350px] mx-auto mt-4">
           <CardHeader>

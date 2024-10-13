@@ -6,8 +6,11 @@ import { useState, useEffect } from "react";
 import { RepoSelector, Repository } from "../components/RepoSelector";
 import { Button } from "@/components/ui/button";
 import { useToast } from "../../hooks/use-toast";
+import Link from 'next/link';
 
-interface Application {
+
+
+export interface Application {
   id: number;
   github_repo_name: string;
   github_username: string;
@@ -17,9 +20,10 @@ interface Application {
 
 export default function Applications() {
   const { data: session } = useSession();
-  const [selectedRepo, setSelectedRepo] = useState<Repository | null>(null);
-  const [isDeploying, setIsDeploying] = useState(false);
+ 
   const { toast } = useToast();
+
+
 
   const [applications, setApplications] = useState<Application[]>([]);
 
@@ -45,72 +49,9 @@ export default function Applications() {
     fetchApplications();
   }, []);
 
-  const handleSelectRepo = (repo: Repository) => {
-    setSelectedRepo(repo);
-  };
+ 
 
-  const handleDeploy = async () => {
-    if (
-      !selectedRepo ||
-      !session?.user.id ||
-      !session.accessToken ||
-      !session.user.githubUsername
-    ) {
-      console.error("Missing required data for deployment.");
-      toast({
-        title: "Error",
-        description: "Missing required data for deployment.",
-        variant: "destructive",
-      });
-      return;
-    }
 
-    setIsDeploying(true);
-    try {
-      const requestData = {
-        repoFullName: selectedRepo.full_name,
-        accessToken: session.accessToken,
-        userId: session.user.id.toString(),
-        githubUsername: session.user.githubUsername,
-      };
-
-      const goEndpointUrl = "http://localhost:3005/build-and-push-deploy";
-
-      const response = await fetch(goEndpointUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to initiate deployment.");
-      }
-
-      const data = await response.json();
-      console.log("Build and push initiated:", data);
-
-      toast({
-        title: "Deployment Started",
-        description: "Your application is being deployed.",
-      });
-
-      // Refresh the list of applications after deployment
-      fetchApplications();
-
-    } catch (error: any) {
-      console.error("Error during build and push:", error);
-      toast({
-        title: "Deployment Error",
-        description: error.message || "An error occurred during deployment.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsDeploying(false);
-    }
-  };
 
   return (
     <div>
@@ -119,42 +60,28 @@ export default function Applications() {
           <h2 className="text-xl font-bold mb-4">Your Applications</h2>
           <div className="space-y-4">
             {applications.map((app) => (
-              <Card key={app.id}>
-                <CardHeader>
-                  <CardTitle>{app.project_name}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p><strong>Repository:</strong> {app.github_repo_name}</p>
-                  <p><strong>Deployed By:</strong> {app.github_username}</p>
-                  {/* Add more details as needed */}
-                </CardContent>
-              </Card>
+              <Link href={`/applications/${app.id}`} key={app.id}>
+                <Card className="cursor-pointer">
+                  <CardHeader>
+                    <CardTitle>{app.project_name}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p>
+                      <strong>Repository:</strong> {app.github_repo_name}
+                    </p>
+                    <p>
+                      <strong>Deployed By:</strong> {app.github_username}
+                    </p>
+                    {/* Add more details as needed */}
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
         </div>
       )}
 
-      {session?.user.githubUsername && (
-        <RepoSelector onSelectRepo={handleSelectRepo} />
-      )}
-
-      {selectedRepo && (
-        <Card className="w-[350px] mx-auto mt-4">
-          <CardHeader>
-            <CardTitle>Selected Repository</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p>Ready to deploy: {selectedRepo.full_name}</p>
-            <Button
-              onClick={handleDeploy}
-              disabled={isDeploying}
-              className="mt-4"
-            >
-              {isDeploying ? "Deploying..." : "Deploy Application"}
-            </Button>
-          </CardContent>
-        </Card>
-      )}
+      <RepoSelector fetchApplications={fetchApplications} />
     </div>
   );
 }
