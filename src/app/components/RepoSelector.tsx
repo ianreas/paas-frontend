@@ -1,17 +1,12 @@
+import React, { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { toast } from "@/hooks/use-toast";
-import { useSession } from "next-auth/react";
-import React, { useEffect, useState } from "react";
+import { toast } from '@/hooks/use-toast';
 
 type CPUResource =
   | "100m"
@@ -44,20 +39,16 @@ export type Repository = {
   full_name: string;
 };
 
-export function RepoSelector({
-  fetchApplications,
-}: {
-  fetchApplications: () => void;
-}) {
+export function RepoSelector({ fetchApplications }: { fetchApplications: () => void }) {
   const { data: session } = useSession();
+  const router = useRouter();
   const [repos, setRepos] = useState<Repository[]>([]);
   const [selectedRepo, setSelectedRepo] = useState<Repository | null>(null);
 
-  const [containerPort, setContainerPort] = useState<number>(80);
+  const [containerPort, setContainerPort] = useState<number>(3000);
   const [replicas, setReplicas] = useState<number>(1);
   const [cpuAllocation, setCpuAllocation] = useState<CPUResource>("500m");
-  const [memoryAllocation, setMemoryAllocation] =
-    useState<MemoryResource>("512Mi");
+  const [memoryAllocation, setMemoryAllocation] = useState<MemoryResource>("512Mi");
 
   const [isDeploying, setIsDeploying] = useState(false);
 
@@ -69,16 +60,16 @@ export function RepoSelector({
 
   const fetchRepos = async () => {
     try {
-      const response = await fetch("https://api.github.com/user/repos", {
+      const response = await fetch('https://api.github.com/user/repos', {
         headers: {
           Authorization: `Bearer ${session?.accessToken}`,
         },
       });
-      if (!response.ok) throw new Error("Failed to fetch repositories");
+      if (!response.ok) throw new Error('Failed to fetch repositories');
       const data = await response.json();
       setRepos(data);
     } catch (error) {
-      console.error("Error fetching repositories:", error);
+      console.error('Error fetching repositories:', error);
       toast({
         title: "Error",
         description: "Failed to fetch repositories.",
@@ -116,9 +107,9 @@ export function RepoSelector({
         memoryAllocation: memoryAllocation,
       };
 
-      const goEndpointUrl = "http://localhost:3005/build-and-push-deploy";
+      const apiUrl = "http://localhost:3005/build-and-push-deploy";
 
-      const response = await fetch(goEndpointUrl, {
+      const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -139,7 +130,10 @@ export function RepoSelector({
         description: "Your application is being deployed.",
       });
 
-      fetchApplications();
+      // Navigate to the application's page using application_id
+      const applicationId = data.application_id;
+      router.push(`/applications/${applicationId}/`);
+
     } catch (error: any) {
       console.error("Error during build and push:", error);
       toast({
@@ -149,6 +143,7 @@ export function RepoSelector({
       });
     } finally {
       setIsDeploying(false);
+      fetchApplications();
     }
   };
 
@@ -191,9 +186,7 @@ export function RepoSelector({
                     id="containerPort"
                     type="number"
                     value={containerPort}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      setContainerPort(parseInt(e.target.value))
-                    }
+                    onChange={(e) => setContainerPort(parseInt(e.target.value))}
                   />
                 </div>
 
@@ -203,36 +196,21 @@ export function RepoSelector({
                     id="replicas"
                     type="number"
                     value={replicas}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      setReplicas(parseInt(e.target.value))
-                    }
+                    onChange={(e) => setReplicas(parseInt(e.target.value))}
                   />
                 </div>
 
                 <div className="mb-4">
                   <Label htmlFor="cpuAllocation">CPU Allocation</Label>
                   <Select
-                    onValueChange={(value) =>
-                      setCpuAllocation(value as CPUResource)
-                    }
+                    onValueChange={(value) => setCpuAllocation(value as CPUResource)}
+                    value={cpuAllocation}
                   >
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder={cpuAllocation} />
+                      <SelectValue placeholder="Select CPU Allocation" />
                     </SelectTrigger>
                     <SelectContent>
-                      {[
-                        "100m",
-                        "250m",
-                        "500m",
-                        "1",
-                        "2",
-                        "4",
-                        "8",
-                        "12",
-                        "16",
-                        "20",
-                        "24",
-                      ].map((cpu) => (
+                      {["100m", "250m", "500m", "1", "2", "4", "8", "12", "16", "20", "24"].map((cpu) => (
                         <SelectItem key={cpu} value={cpu}>
                           {cpu}
                         </SelectItem>
@@ -244,26 +222,14 @@ export function RepoSelector({
                 <div className="mb-4">
                   <Label htmlFor="memoryAllocation">Memory Allocation</Label>
                   <Select
-                    onValueChange={(value) =>
-                      setMemoryAllocation(value as MemoryResource)
-                    }
+                    onValueChange={(value) => setMemoryAllocation(value as MemoryResource)}
+                    value={memoryAllocation}
                   >
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder={memoryAllocation} />
+                      <SelectValue placeholder="Select Memory Allocation" />
                     </SelectTrigger>
                     <SelectContent>
-                      {[
-                        "256Mi",
-                        "512Mi",
-                        "1Gi",
-                        "2Gi",
-                        "4Gi",
-                        "8Gi",
-                        "16Gi",
-                        "32Gi",
-                        "48Gi",
-                        "64Gi",
-                      ].map((mem) => (
+                      {["256Mi", "512Mi", "1Gi", "2Gi", "4Gi", "8Gi", "16Gi", "32Gi", "48Gi", "64Gi"].map((mem) => (
                         <SelectItem key={mem} value={mem}>
                           {mem}
                         </SelectItem>

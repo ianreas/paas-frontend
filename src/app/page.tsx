@@ -67,7 +67,7 @@ export default function Home() {
           )}
         </CardContent>
       </Card>
-
+{/* 
       {session?.user.githubUsername && (
         <RepoSelector onSelectRepo={handleSelectRepo} />
       )}
@@ -81,7 +81,7 @@ export default function Home() {
             <p>Ready to deploy: {selectedRepo.full_name}</p>
           </CardContent>
         </Card>
-      )}
+      )} */}
 
       {session && (
         <Card className="w-[350px] mx-auto mt-4">

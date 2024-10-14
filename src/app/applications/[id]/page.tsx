@@ -87,6 +87,18 @@ export default function ApplicationDetails() {
           <p>
             <strong>User ID:</strong> {application.user_id}
           </p>
+          <p>
+            <strong>Container Port:</strong> {application.container_port}
+          </p>
+          <p>
+            <strong>Replicas:</strong> {application.replicas}
+          </p>
+          <p>
+            <strong>CPU Allocation:</strong> {application.requested_cpu}
+          </p>
+          <p>
+            <strong>Memory Allocation:</strong> {application.requested_memory}
+          </p>
           {/* Add more application details as needed */}
           <Button
             variant="destructive"

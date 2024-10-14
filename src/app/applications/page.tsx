@@ -16,6 +16,10 @@ export interface Application {
   github_username: string;
   user_id: string;
   project_name: string;
+  container_port: number;
+  replicas: number;
+  requested_cpu: string;
+  requested_memory: string;
 }
 
 export default function Applications() {
