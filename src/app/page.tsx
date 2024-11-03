@@ -290,7 +290,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-[#C3FDBF]">
+    <div className="min-h-screen bg-[#A4FBAD]">
       {/* Hero Section with Full-screen SplineViewer */}
       <div className="relative h-screen">
         <div className="absolute inset-0">

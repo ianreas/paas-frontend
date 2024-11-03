@@ -5,6 +5,27 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { UserNav } from './UserNav';
+import CatIcon from '../icons/cat';
+import styled from '@emotion/styled'
+
+const LogoBox = styled.span`
+  font-weight: bold;
+  font-size: 18px;
+  display: inline-flex;
+  align-items: center;
+  height: 30px;
+  line-height: 20px;
+  padding: 10px;
+
+  svg {
+    transition: transform 200ms ease;
+    &:hover {
+      transform: rotate(180deg);
+      filter: invert(1);
+    }
+  }
+`
+
 
 const Navbar = () => {
   const pathname = usePathname();
@@ -17,14 +38,18 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-white shadow-sm">
+    <nav className="bg-[#B2FFB9] shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
+              <LogoBox>
               <Link href="/">
-                <span className="text-xl font-bold text-gray-800">YourLogo</span>
-              </Link>
+                <span className="text-xl font-bold text-gray-800">
+                  <CatIcon />
+                </span>
+                </Link>
+              </LogoBox>
             </div>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
               {navItems.map((item) => (
@@ -43,7 +68,7 @@ const Navbar = () => {
             </div>
           </div>
           <div className="hidden sm:ml-6 sm:flex sm:items-center">
-            <Button variant="ghost">Sign In</Button>
+            <Button variant="link">Log In</Button>
             <UserNav />
           </div>
         </div>
