@@ -1,11 +1,17 @@
 'use client';
+//export const dynamic = 'force-dynamic';
 
+
+import { Suspense } from 'react';
 import { useEffect, useState } from 'react';
 import { getProviders, signIn, useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-export default function SignIn() {
+
+
+
+function SignInContent() {
   const { data: session } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -57,5 +63,14 @@ export default function SignIn() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+
+export default function SignIn() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SignInContent />
+    </Suspense>
   );
 }
