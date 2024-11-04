@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { UserNav } from './UserNav';
 import CatIcon from '../icons/cat';
 import styled from '@emotion/styled'
+import { signIn, useSession } from 'next-auth/react'
 
 const LogoBox = styled.span`
   font-weight: bold;
@@ -29,6 +30,7 @@ const LogoBox = styled.span`
 
 const Navbar = () => {
   const pathname = usePathname();
+  const { data: session } = useSession();
 
   const navItems = [
     { label: 'Home', href: '/' },
@@ -38,7 +40,9 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-[#B2FFB9] shadow-sm">
+    // <nav className="bg-[#B2FFB9] shadow-sm backdrop-blur-md border-none">
+    // <nav className="fixed top-0 left-0 right-0 z-50 bg-[#B2FFB9]  backdrop-blur-md border-none">
+    <nav className="fixed w-full top-0 z-50 bg-opacity-50 bg-[#B2FFB9] shadow-sm backdrop-blur-sm border-none">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex">
@@ -68,9 +72,16 @@ const Navbar = () => {
             </div>
           </div>
           <div className="hidden sm:ml-6 sm:flex sm:items-center">
-            <Button variant="link">Log In</Button>
-            <UserNav />
-          </div>
+        {!session ? (
+          <Button 
+            variant="link" 
+            onClick={() => signIn('google', { callbackUrl: '/' })}
+          >
+            Log In
+          </Button>
+        ) : null}
+        <UserNav />
+      </div>
         </div>
       </div>
     </nav>

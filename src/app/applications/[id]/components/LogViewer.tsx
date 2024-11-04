@@ -1,5 +1,6 @@
 "use client";
 
+import { GlassCard } from "@/app/components/ui/CustomCards";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
@@ -57,20 +58,27 @@ export default function LogViewer({ appName }: LogViewerProps) {
   }, [logs]);
 
   return (
-    <Card className="mt-6">
+    <GlassCard>
       <CardHeader>
         <CardTitle>Application Logs</CardTitle>
       </CardHeader>
       <CardContent>
-        <ScrollArea className="h-64">
-          <div className="text-sm font-mono whitespace-pre-wrap">
-            {logs.map((log, index) => (
-              <p key={index}>{log}</p>
-            ))}
-            <div ref={logsEndRef} />
-          </div>
-        </ScrollArea>
+        <div className="flex flex-col gap-4">
+          <ScrollArea className="h-64 rounded-lg border border-white/20 bg-white/90">
+            <div className="text-sm font-mono whitespace-pre-wrap">
+              {logs.length === 0 && (
+                <p className="text-center text-sm text-gray-500 mt-24">
+                  No logs yet...
+                </p>
+              )}
+              {logs.map((log, index) => (
+                <p key={index}>{log}</p>
+              ))}
+              <div ref={logsEndRef} />
+            </div>
+          </ScrollArea>
+        </div>
       </CardContent>
-    </Card>
+    </GlassCard>
   );
 }

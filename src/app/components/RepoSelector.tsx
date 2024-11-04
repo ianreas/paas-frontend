@@ -7,6 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from '@/hooks/use-toast';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { Plus } from 'lucide-react';
 
 type CPUResource =
   | "100m"
@@ -51,6 +53,8 @@ export function RepoSelector({ fetchApplications }: { fetchApplications: () => v
   const [memoryAllocation, setMemoryAllocation] = useState<MemoryResource>("512Mi");
 
   const [isDeploying, setIsDeploying] = useState(false);
+
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (session?.accessToken) {
@@ -148,110 +152,120 @@ export function RepoSelector({ fetchApplications }: { fetchApplications: () => v
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto mt-4">
-      <CardHeader>
-        <CardTitle>Deploy a New Application</CardTitle>
-      </CardHeader>
-      <CardContent>
-        {session?.accessToken ? (
-          <>
-            <div className="mb-4">
-              <Label htmlFor="repository">Select Repository</Label>
-              <Select
-                onValueChange={(value) => {
-                  const repo = repos.find((r) => r.full_name === value);
-                  if (repo) {
-                    setSelectedRepo(repo);
-                  }
-                }}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select a repository" />
-                </SelectTrigger>
-                <SelectContent>
-                  {repos.map((repo) => (
-                    <SelectItem key={repo.id} value={repo.full_name}>
-                      {repo.full_name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {selectedRepo && (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button className="flex items-center gap-2">
+          <Plus className="h-4 w-4" />
+          Deploy New
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[500px]">
+        <Card className="border-0 shadow-none">
+          <CardHeader>
+            <CardTitle>Deploy a New Application</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {session?.accessToken ? (
               <>
                 <div className="mb-4">
-                  <Label htmlFor="containerPort">Container Port</Label>
-                  <Input
-                    id="containerPort"
-                    type="number"
-                    value={containerPort}
-                    onChange={(e) => setContainerPort(parseInt(e.target.value))}
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <Label htmlFor="replicas">Replicas</Label>
-                  <Input
-                    id="replicas"
-                    type="number"
-                    value={replicas}
-                    onChange={(e) => setReplicas(parseInt(e.target.value))}
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <Label htmlFor="cpuAllocation">CPU Allocation</Label>
+                  <Label htmlFor="repository">Select Repository</Label>
                   <Select
-                    onValueChange={(value) => setCpuAllocation(value as CPUResource)}
-                    value={cpuAllocation}
+                    onValueChange={(value) => {
+                      const repo = repos.find((r) => r.full_name === value);
+                      if (repo) {
+                        setSelectedRepo(repo);
+                      }
+                    }}
                   >
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select CPU Allocation" />
+                      <SelectValue placeholder="Select a repository" />
                     </SelectTrigger>
                     <SelectContent>
-                      {["100m", "250m", "500m", "1", "2", "4", "8", "12", "16", "20", "24"].map((cpu) => (
-                        <SelectItem key={cpu} value={cpu}>
-                          {cpu}
+                      {repos.map((repo) => (
+                        <SelectItem key={repo.id} value={repo.full_name}>
+                          {repo.full_name}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
 
-                <div className="mb-4">
-                  <Label htmlFor="memoryAllocation">Memory Allocation</Label>
-                  <Select
-                    onValueChange={(value) => setMemoryAllocation(value as MemoryResource)}
-                    value={memoryAllocation}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select Memory Allocation" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {["256Mi", "512Mi", "1Gi", "2Gi", "4Gi", "8Gi", "16Gi", "32Gi", "48Gi", "64Gi"].map((mem) => (
-                        <SelectItem key={mem} value={mem}>
-                          {mem}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                {selectedRepo && (
+                  <>
+                    <div className="mb-4">
+                      <Label htmlFor="containerPort">Container Port</Label>
+                      <Input
+                        id="containerPort"
+                        type="number"
+                        value={containerPort}
+                        onChange={(e) => setContainerPort(parseInt(e.target.value))}
+                      />
+                    </div>
 
-                <Button
-                  onClick={handleDeploy}
-                  disabled={isDeploying}
-                  className="w-full mt-4"
-                >
-                  {isDeploying ? "Deploying..." : "Deploy Application"}
-                </Button>
+                    <div className="mb-4">
+                      <Label htmlFor="replicas">Replicas</Label>
+                      <Input
+                        id="replicas"
+                        type="number"
+                        value={replicas}
+                        onChange={(e) => setReplicas(parseInt(e.target.value))}
+                      />
+                    </div>
+
+                    <div className="mb-4">
+                      <Label htmlFor="cpuAllocation">CPU Allocation</Label>
+                      <Select
+                        onValueChange={(value: CPUResource) => setCpuAllocation(value)}
+                        value={cpuAllocation}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select CPU Allocation" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {["100m", "250m", "500m", "1", "2", "4", "8", "12", "16", "20", "24"].map((cpu) => (
+                            <SelectItem key={cpu} value={cpu}>
+                              {cpu}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="mb-4">
+                      <Label htmlFor="memoryAllocation">Memory Allocation</Label>
+                      <Select
+                        onValueChange={(value: MemoryResource) => setMemoryAllocation(value)}
+                        value={memoryAllocation}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select Memory Allocation" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {["256Mi", "512Mi", "1Gi", "2Gi", "4Gi", "8Gi", "16Gi", "32Gi", "48Gi", "64Gi"].map((mem) => (
+                            <SelectItem key={mem} value={mem}>
+                              {mem}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <Button
+                      onClick={handleDeploy}
+                      disabled={isDeploying}
+                      className="w-full mt-4"
+                    >
+                      {isDeploying ? "Deploying..." : "Deploy Application"}
+                    </Button>
+                  </>
+                )}
               </>
+            ) : (
+              <p>Please sign in to select a repository.</p>
             )}
-          </>
-        ) : (
-          <p>Please sign in to select a repository.</p>
-        )}
-      </CardContent>
-    </Card>
+          </CardContent>
+        </Card>
+      </DialogContent>
+    </Dialog>
   );
 }

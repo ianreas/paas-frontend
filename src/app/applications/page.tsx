@@ -7,6 +7,7 @@ import { RepoSelector, Repository } from "../components/RepoSelector";
 import { Button } from "@/components/ui/button";
 import { useToast } from "../../hooks/use-toast";
 import Link from 'next/link';
+import ApplicationViews from "../components/ui/ListViewer";
 
 
 
@@ -20,6 +21,8 @@ export interface Application {
   replicas: number;
   requested_cpu: string;
   requested_memory: string;
+  status: string;
+  last_deployed_at: string;
 }
 
 export default function Applications() {
@@ -58,34 +61,14 @@ export default function Applications() {
 
 
   return (
-    <div>
+    <div className="bg-[#A4FBAD] min-h-screen pt-0">
       {applications.length > 0 && (
-        <div className="my-4">
-          <h2 className="text-xl font-bold mb-4">Your Applications</h2>
+        <div className="pt-16">
+          <ApplicationViews applications={applications} fetchApplications={fetchApplications} />
           <div className="space-y-4">
-            {applications.map((app) => (
-              <Link href={`/applications/${app.id}`} key={app.id}>
-                <Card className="cursor-pointer">
-                  <CardHeader>
-                    <CardTitle>{app.project_name}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p>
-                      <strong>Repository:</strong> {app.github_repo_name}
-                    </p>
-                    <p>
-                      <strong>Deployed By:</strong> {app.github_username}
-                    </p>
-                    {/* Add more details as needed */}
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
           </div>
         </div>
       )}
-
-      <RepoSelector fetchApplications={fetchApplications} />
     </div>
   );
 }
