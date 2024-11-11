@@ -34,14 +34,13 @@ const Navbar = () => {
 
   const navItems = [
     { label: 'Home', href: '/' },
-    { label: 'About', href: '/about' },
-    { label: 'Applications', href: '/applications' },
-    { label: 'Contact', href: '/contact' },
+    // { label: 'About', href: '/about' },
+    ...(session ? [{ label: 'Applications', href: '/applications' }] : []),
+    {label: "Pricing", href: "/pricing"}
+    // { label: 'Contact', href: '/contact' },
   ];
 
   return (
-    // <nav className="bg-[#B2FFB9] shadow-sm backdrop-blur-md border-none">
-    // <nav className="fixed top-0 left-0 right-0 z-50 bg-[#B2FFB9]  backdrop-blur-md border-none">
     <nav className="fixed w-full top-0 z-50 bg-opacity-50 bg-[#B2FFB9] shadow-sm backdrop-blur-sm border-none">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
