@@ -215,7 +215,8 @@ export default function CronJobs({ applicationId }: { applicationId: number }) {
               <Clock className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p>No cron jobs configured yet</p>
               <p className="text-sm">
-                Click "Add Cron Job" to create your first scheduled task
+                Click &quot;Add Cron Job&quot; to create your first scheduled
+                task
               </p>
             </div>
           )}
