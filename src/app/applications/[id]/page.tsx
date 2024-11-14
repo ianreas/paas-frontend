@@ -22,6 +22,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GlassCard } from "@/app/components/ui/CustomCards";
 import { motion } from 'framer-motion';
 import { Cloud, Server, Cpu, GitBranch, User, MemoryStick } from 'lucide-react';
+import MonitoringDashboard from "./components/SystemMetrics";
 
 
 type CPUResource =
@@ -482,6 +483,7 @@ export default function ApplicationDetails() {
           </TabsContent>
         </Tabs>
       </div>
+      <MonitoringDashboard appName={"dummy-express-eks"} />
     </div>
   );
 }
