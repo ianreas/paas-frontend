@@ -47,8 +47,8 @@ const timeRanges = [
   { value: "7d", label: "Last 7 Days", duration: () => subDays(new Date(), 7) },
 ];
 
-const MetricChart = ({ data, title, description, dataKey, color }) => {
-  const formattedData = data?.map((item) => ({
+const MetricChart = ({ data, title, description, dataKey, color }: { data: any, title: string, description: string, dataKey: string, color: string }) => {
+  const formattedData = data?.map((item: any  ) => ({
     ...item,
     value: Number((item.value * 100).toFixed(1)),
   }));
@@ -136,15 +136,21 @@ const MetricChart = ({ data, title, description, dataKey, color }) => {
 };
 
 const MonitoringDashboard = ({ appName = "Test App" }) => {
-  const [metrics, setMetrics] = useState(null);
+  const [metrics, setMetrics] = useState<any | null>(null);
   const [timeRange, setTimeRange] = useState("1h");
   const [isLoading, setIsLoading] = useState(false);
-  const [lastUpdated, setLastUpdated] = useState(null);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   const fetchMetrics = async () => {
     setIsLoading(true);
     const endTime = new Date();
-    const startTime = timeRanges.find((r) => r.value === timeRange).duration();
+    const startTime = timeRanges.find((r) => r.value === timeRange)?.duration();
+
+    if (!startTime) {
+      console.error("Invalid time range:", timeRange);
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const response = await fetch("http://localhost:3005/metrics", {
