@@ -23,6 +23,7 @@
     "@radix-ui/react-toast": "^1.2.2",
     "@splinetool/react-spline": "^4.0.0",
     "@splinetool/runtime": "^1.9.35",
+    "@tremor/react": "^3.18.4",
     "@types/next-auth": "^3.15.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",

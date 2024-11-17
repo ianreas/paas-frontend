@@ -44,11 +44,11 @@ declare module "next-auth" {
 
 // Database connection pool
 const pool = new Pool({
-  host: process.env.NEXT_PUBLIC_DB_HOST,
-  port: parseInt(process.env.NEXT_PUBLIC_DB_PORT || "5432"),
-  user: process.env.NEXT_PUBLIC_DB_USER,
-  password: process.env.NEXT_PUBLIC_DB_PASSWORD,
-  database: process.env.NEXT_PUBLIC_DB_NAME,
+  host: process.env.DB_HOST,
+  port: parseInt(process.env.DB_PORT || "5432"),
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
   ssl: {
     rejectUnauthorized: false,
   },
@@ -57,12 +57,12 @@ const pool = new Pool({
 export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
-      clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? "",
-      clientSecret: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_SECRET ?? "",
+      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
     }),
     GithubProvider({
-      clientId: process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID ?? "",
-      clientSecret: process.env.NEXT_PUBLIC_GITHUB_CLIENT_SECRET ?? "",
+      clientId: process.env.GITHUB_CLIENT_ID ?? "",
+      clientSecret: process.env.GITHUB_CLIENT_SECRET ?? "",
       authorization: {
         params: {
           scope: "read:user user:email repo",

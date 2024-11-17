@@ -62,7 +62,7 @@ export default function CronJobs({ applicationId }: { applicationId: number }) {
     <GlassCard>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-2xl">
-          <Clock className="h-6 w-6 text-purple-600" />
+          <Clock className="h-6 w-6 text-black" />
           Cron Jobs
         </CardTitle>
       </CardHeader>
@@ -72,7 +72,7 @@ export default function CronJobs({ applicationId }: { applicationId: number }) {
           <PopoverTrigger asChild>
             <Button
               onClick={() => setIsPopoverOpen(true)}
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white flex items-center gap-2"
+              className="w-full bg-black hover:bg-black/80 text-white flex items-center gap-2"
             >
               <Plus className="h-4 w-4" />
               Add Cron Job
@@ -82,7 +82,7 @@ export default function CronJobs({ applicationId }: { applicationId: number }) {
             <div className="grid gap-6">
               <div className="space-y-2">
                 <h4 className="font-medium leading-none flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-purple-600" />
+                  <Calendar className="h-4 w-4 text-black" />
                   Cron Job Details
                 </h4>
                 <p className="text-sm text-gray-600">
@@ -144,7 +144,7 @@ export default function CronJobs({ applicationId }: { applicationId: number }) {
                 </div>
                 <Button
                   onClick={handleAddCronJob}
-                  className="w-full bg-purple-600 hover:bg-purple-700"
+                  className="w-full bg-black hover:bg-black/80"
                 >
                   Create Cron Job
                 </Button>
@@ -166,7 +166,7 @@ export default function CronJobs({ applicationId }: { applicationId: number }) {
                 <div className="space-y-1">
                   <Link
                     href={`/applications/${applicationId}/${cronJob.id}`}
-                    className="text-lg font-medium text-purple-700 hover:text-purple-800 flex items-center gap-2"
+                    className="text-lg font-medium text-black hover:text-black/80 flex items-center gap-2"
                   >
                     <Calendar className="h-4 w-4" />
                     {cronJob.name}

@@ -318,6 +318,7 @@ import {
 } from "@/components/ui/popover";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { format, formatDate } from "date-fns";
+import { GlassCard } from "@/app/components/ui/CustomCards";
 
 interface LogEntry {
   time: string;
@@ -417,7 +418,7 @@ export default function LogViewer({ appName }: LogViewerProps) {
   };
 
   return (
-    <Card className="w-full bg-white/95 backdrop-blur-sm shadow-lg">
+    <GlassCard >
       <CardHeader className="border-b">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -530,6 +531,6 @@ export default function LogViewer({ appName }: LogViewerProps) {
           )}
         </ScrollArea>
       </CardContent>
-    </Card>
+    </GlassCard>
   );
 }
