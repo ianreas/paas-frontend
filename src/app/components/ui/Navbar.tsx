@@ -36,7 +36,9 @@ const Navbar = () => {
     { label: 'Home', href: '/' },
     // { label: 'About', href: '/about' },
     ...(session ? [{ label: 'Applications', href: '/applications' }] : []),
-    {label: "Pricing", href: "/pricing"}
+    {label: "Pricing", href: "/pricing"},
+    {label: "Contact Us", href: "/contact-us"},
+    {label: "About Us", href: "/about-us"},
     // { label: 'Contact', href: '/contact' },
   ];
 

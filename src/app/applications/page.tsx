@@ -6,10 +6,8 @@ import { useState, useEffect } from "react";
 import { RepoSelector, Repository } from "../components/RepoSelector";
 import { Button } from "@/components/ui/button";
 import { useToast } from "../../hooks/use-toast";
-import Link from 'next/link';
+import Link from "next/link";
 import ApplicationViews from "../components/ui/ListViewer";
-
-
 
 export interface Application {
   id: number;
@@ -27,27 +25,25 @@ export interface Application {
 
 export default function Applications() {
   const { data: session } = useSession();
- 
+
   const { toast } = useToast();
-
-
 
   const [applications, setApplications] = useState<Application[]>([]);
 
   const fetchApplications = async () => {
     try {
-      const response = await fetch('/api/get-user-applications');
+      const response = await fetch("/api/get-user-applications");
       if (!response.ok) {
-        throw new Error('Failed to fetch applications');
+        throw new Error("Failed to fetch applications");
       }
       const data = await response.json();
       setApplications(data.applications);
     } catch (error) {
-      console.error('Error fetching applications:', error);
+      console.error("Error fetching applications:", error);
       toast({
-        title: 'Error',
-        description: 'Failed to fetch applications.',
-        variant: 'destructive',
+        title: "Error",
+        description: "Failed to fetch applications.",
+        variant: "destructive",
       });
     }
   };
@@ -56,17 +52,15 @@ export default function Applications() {
     fetchApplications();
   }, []);
 
- 
-
-
-
   return (
     <div className="bg-[#A4FBAD] min-h-screen pt-0">
       {applications.length > 0 && (
         <div className="pt-16">
-          <ApplicationViews applications={applications} fetchApplications={fetchApplications} />
-          <div className="space-y-4">
-          </div>
+          <ApplicationViews
+            applications={applications}
+            fetchApplications={fetchApplications}
+          />
+          <div className="space-y-4"></div>
         </div>
       )}
     </div>

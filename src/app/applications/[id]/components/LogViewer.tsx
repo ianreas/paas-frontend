@@ -423,7 +423,7 @@ export default function LogViewer({ appName }: LogViewerProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Terminal className="w-5 h-5" />
-            <CardTitle>Application Logs</CardTitle>
+            {/* <CardTitle>Application Logs</CardTitle> */}
           </div>
           <div className="flex items-center gap-4">
             <Badge variant="outline" className="text-xs">

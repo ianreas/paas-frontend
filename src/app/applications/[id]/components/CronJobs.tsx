@@ -61,10 +61,10 @@ export default function CronJobs({ applicationId }: { applicationId: number }) {
   return (
     <GlassCard>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-2xl">
+        {/* <CardTitle className="flex items-center gap-2 text-2xl">
           <Clock className="h-6 w-6 text-black" />
           Cron Jobs
-        </CardTitle>
+        </CardTitle> */}
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Add Cron Job Button */}

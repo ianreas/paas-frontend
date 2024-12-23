@@ -47,7 +47,7 @@ const timeRanges = [
   { value: "7d", label: "Last 7 Days", duration: () => subDays(new Date(), 7) },
 ];
 
-const MetricChart = ({ data, title, description, dataKey, color }: { data: any, title: string, description: string, dataKey: string, color: string }) => {
+export const MetricChart = ({ data, title, description, dataKey, color }: { data: any, title: string, description: string, dataKey: string, color: string }) => {
   const formattedData = data?.map((item: any  ) => ({
     ...item,
     value: Number((item.value * 100).toFixed(1)),
@@ -135,7 +135,7 @@ const MetricChart = ({ data, title, description, dataKey, color }: { data: any, 
   );
 };
 
-const MonitoringDashboard = ({ appName = "Test App" }) => {
+export const MonitoringDashboard = ({ appName = "Test App" }) => {
   const [metrics, setMetrics] = useState<any | null>(null);
   const [timeRange, setTimeRange] = useState("1h");
   const [isLoading, setIsLoading] = useState(false);
@@ -188,15 +188,15 @@ const MonitoringDashboard = ({ appName = "Test App" }) => {
       <CardHeader>
         <div className="flex items-center justify-between gap-4">
           <div>
-            <CardTitle className="text-2xl font-semibold text-zinc-800">
+            {/* <CardTitle className="text-2xl font-semibold text-zinc-800">
               System Monitoring - {appName}
-            </CardTitle>
-            {lastUpdated && (
+            </CardTitle> */}
+            {/* {lastUpdated && (
               <CardDescription className="flex items-center gap-1 mt-1">
                 <Clock className="w-4 h-4" />
                 Last updated: {format(lastUpdated, "HH:mm:ss")}
               </CardDescription>
-            )}
+            )} */}
           </div>
           <div className="flex items-center gap-3">
             <Select value={timeRange} onValueChange={setTimeRange}>

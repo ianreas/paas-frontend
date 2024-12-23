@@ -262,6 +262,7 @@ import {
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useRef } from "react";
 import KuberSpline from "./components/KuberSpline";
+import FeatureShowcase from "./components/ui/FeatureShowcase";
 
 export default function Home() {
   const { data: session, update } = useSession();
@@ -368,8 +369,10 @@ export default function Home() {
         </div>
       </div>
 
+      <FeatureShowcase/>
+
       {/* Auth Status Section */}
-      {session && (
+      {/* {session && (
         <div className="container mx-auto px-4 pb-20">
           <Card className="bg-white/50 border-none shadow-lg">
             <CardHeader>
@@ -393,7 +396,7 @@ export default function Home() {
             </CardContent>
           </Card>
         </div>
-      )}
+      )} */}
     </div>
   );
 }

@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { format } from "date-fns";
 import {
   Command,
   CommandEmpty,
@@ -170,8 +171,8 @@ const ApplicationViews = ({
                   </Badge>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Last deployed: {app.last_deployed_at}
-                </p>
+  Last deployed: {format(new Date(app.last_deployed_at), "MMMM d, yyyy h:mm a")}
+</p>
               </CardContent>
               <CardFooter>
                 <Link href={`/applications/${app.id}`}>

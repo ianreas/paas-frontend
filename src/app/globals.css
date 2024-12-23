@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.TooltipContent {
+  z-index: 500000;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
