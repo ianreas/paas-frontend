@@ -27,7 +27,7 @@ const ContactPage = () => {
             Contact Us
           </h1>
           <p className="mt-5 text-xl text-gray-500">
-            Have questions about our pricing? We're here to help!
+            Have questions about our pricing? We&apos;re here to help!
           </p>
         </div>
         <GlassCard>
@@ -36,7 +36,7 @@ const ContactPage = () => {
               Send us a message
             </CardTitle>
             <CardDescription className="text-gray-600">
-              Fill out the form below and we'll get back to you as soon as possible.
+              Fill out the form below and we&apos;ll get back to you as soon as possible.
             </CardDescription>
           </CardHeader>
           <CardContent>

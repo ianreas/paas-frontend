@@ -82,7 +82,7 @@ const CPU_MANAGER_POLICY_INFO = (
     <p>
       The CPU Manager Policy controls how CPU resources are allocated and managed for 
       containers in your pods. The static policy enables exclusive CPU core allocation 
-      for containers in Guaranteed QoS class pods, while the default "none" policy 
+      for containers in Guaranteed QoS class pods, while the default &quot;none&quot; policy 
       uses the standard Kubernetes CPU shares-based allocation.
     </p>
 
@@ -203,7 +203,7 @@ const QOS_CLASS_INFO = (
     <p className="mt-4">
       <span className="font-medium">Note:</span> Higher QoS classes (Guaranteed) 
       typically require more resources but provide better stability and predictability. 
-      Choose based on your application's requirements and criticality.
+      Choose based on your application&apos;s requirements and criticality.
     </p>
   </>
 );

@@ -34,7 +34,7 @@ const AboutPage = () => {
             <GlassCard>
               <CardContent className="p-6">
                 <p className="text-lg text-gray-700 leading-relaxed">
-                  MeowPaas is redefining cloud deployment with enterprise-grade performance optimization built into its core. Born from the challenges of modern cloud computing, we've created a platform that makes sophisticated infrastructure accessible to teams of all sizes.
+                  MeowPaas is redefining cloud deployment with enterprise-grade performance optimization built into its core. Born from the challenges of modern cloud computing, we&apos;ve created a platform that makes sophisticated infrastructure accessible to teams of all sizes.
                 </p>
               </CardContent>
             </GlassCard>
@@ -77,7 +77,7 @@ const AboutPage = () => {
                     <Cpu className="h-8 w-8 text-emerald-600" />
                     <h3 className="text-xl font-semibold text-gray-900">Intelligent Workload Placement</h3>
                     <p className="text-gray-700">
-                      Automatically detects your application's resource patterns and optimizes deployment accordingly.
+                      Automatically detects your application&apos;s resource patterns and optimizes deployment accordingly.
                     </p>
                   </div>
                   <div className="space-y-4">
@@ -155,7 +155,7 @@ const AboutPage = () => {
               <CardContent className="p-6 text-center">
                 <h2 className="text-3xl font-bold text-gray-900 mb-4">Start Optimizing Today</h2>
                 <p className="text-lg text-gray-700 mb-6">
-                  Join forward-thinking companies that are already leveraging MeowPaas's advanced infrastructure optimization. Experience the perfect balance of performance and simplicity.
+                  Join forward-thinking companies that are already leveraging MeowPaas&apos;s advanced infrastructure optimization. Experience the perfect balance of performance and simplicity.
                 </p>
                 <motion.div
                   whileHover={{ scale: 1.02 }}
