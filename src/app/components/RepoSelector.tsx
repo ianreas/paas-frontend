@@ -69,14 +69,14 @@ export function RepoSelector({ fetchApplications }: { fetchApplications: () => v
           Authorization: `Bearer ${session?.accessToken}`,
         },
       });
-      if (!response.ok) throw new Error('Failed to fetch repositories');
+      //if (!response.ok) throw new Error('Failed to fetch repositories');
       const data = await response.json();
       setRepos(data);
     } catch (error) {
       console.error('Error fetching repositories:', error);
       toast({
         title: "Error",
-        description: "Failed to fetch repositories.",
+        description: "Please reconnect your GitHub account.",
         variant: "destructive",
       });
     }

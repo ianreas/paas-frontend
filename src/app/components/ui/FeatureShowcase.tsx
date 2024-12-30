@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import { motion, useScroll, useSpring, useTransform, MotionValue } from 'framer-motion'
+import { useEffect, useRef } from 'react'
+import { motion, useScroll, useSpring, useTransform } from 'framer-motion'
 import { Button } from "@/components/ui/button"
 import { ArrowRight, CheckCircle2 } from 'lucide-react'
 import CatIcon from '../icons/cat'
@@ -44,9 +44,8 @@ export default function FeatureShowcase() {
   const containerRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ 
     target: containerRef,
-    offset: ["start start", "end end"]
+    offset: ["start center", "end center"]
   })
-  const [activeFeature, setActiveFeature] = useState(0)
 
   const scaleY = useSpring(scrollYProgress, {
     stiffness: 100,
@@ -54,23 +53,11 @@ export default function FeatureShowcase() {
     restDelta: 0.001
   })
 
-  useEffect(() => {
-    const unsubscribe = scrollYProgress.onChange(v => {
-      const newActiveFeature = Math.min(
-        features.length - 1,
-        Math.floor(v * features.length)
-      )
-      setActiveFeature(newActiveFeature)
-    })
-
-    return () => unsubscribe()
-  }, [scrollYProgress])
-
   return (
     <div className="bg-gradient-to-b from-[#B2FFB9] to-[#A4FBD9] min-h-screen py-24 px-4 sm:px-6 lg:px-8" ref={containerRef}>
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <CatIcon className="mx-auto h-12 w-12 text-emerald-500" />
+
           <h2 className="mt-6 text-4xl font-extrabold text-gray-900 sm:text-5xl">
             Our Platform Features
           </h2>
@@ -79,70 +66,82 @@ export default function FeatureShowcase() {
           </p>
         </div>
         <div className="relative mt-24">
-          <div className="absolute left-1/2 w-0.5 h-full bg-emerald-100 transform -translate-x-1/2" />
+          {/* Progress line */}
+          <div className="absolute left-1/2 w-1 h-full bg-emerald-100/50 rounded-full transform -translate-x-1/2" />
           <motion.div
-            className="absolute left-1/2 w-0.5 bg-emerald-500 origin-top transform -translate-x-1/2"
-            style={{ scaleY }}
+            className="absolute left-1/2 w-1 bg-emerald-500 rounded-full origin-top transform -translate-x-1/2"
+            style={{ scaleY, height: '100%' }}
           />
-          {features.map((feature, index) => (
-            <FeatureCard
-              key={index}
-              feature={feature}
-              index={index}
-              active={index === activeFeature}
-              total={features.length}
-              scrollYProgress={scrollYProgress}
-            />
-          ))}
+          
+          <div className="relative">
+            {features.map((feature, index) => (
+              <FeatureCard
+                key={index}
+                feature={feature}
+                index={index}
+                total={features.length}
+                scrollYProgress={scrollYProgress}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>
   )
 }
 
-function FeatureCard({ feature, index, active, total, scrollYProgress }: { 
-  feature: Feature; 
-  index: number; 
-  active: boolean; 
-  total: number;
-  scrollYProgress: MotionValue<number>;
+function FeatureCard({ feature, index, total, scrollYProgress }: { 
+  feature: Feature
+  index: number
+  total: number
+  scrollYProgress: any
 }) {
   const cardRef = useRef<HTMLDivElement>(null)
   const isEven = index % 2 === 0
 
-  const yProgress = useTransform(
+  // Calculate the progress for this specific card
+  const cardProgress = useTransform(
     scrollYProgress,
-    [(index - 0.5) / total, index / total, (index + 1) / total],
+    [index / total, (index + 0.5) / total, (index + 1) / total],
     [0, 1, 0]
   )
 
-  const opacity = useTransform(yProgress, [0, 0.5, 1], [0.4, 1, 0.4])
-  const scale = useTransform(yProgress, [0, 0.5, 1], [0.95, 1, 0.95])
-  const x = useTransform(yProgress, [0, 1], [isEven ? 50 : -50, 0])
-
-  const lineSpring = useSpring(yProgress, { 
-    stiffness: 40,
-    damping: 20,
+  // Smooth out the animations
+  const smoothProgress = useSpring(cardProgress, {
+    stiffness: 100,
+    damping: 30,
     restDelta: 0.001
   })
+
+  // Create smooth animations for each property
+  const opacity = useTransform(smoothProgress, [0, 0.2, 0.8, 1], [0.4, 1, 1, 0.4])
+  const scale = useTransform(smoothProgress, [0, 0.2, 0.8, 1], [0.8, 1.05, 1.05, 0.8])
+  const x = useTransform(
+    smoothProgress, 
+    [0, 1], 
+    [isEven ? 50 : -50, 0]
+  )
 
   return (
     <motion.div
       className={`mb-32 flex justify-between items-center w-full ${
-        isEven ? 'flex-row-reverse left-timeline' : 'right-timeline'
+        isEven ? 'flex-row-reverse' : ''
       }`}
-      style={{ opacity, scale }}
+      style={{ opacity }}
       ref={cardRef}
     >
-      <div className="order-1 w-5/12" />
-      <div className="z-20 flex items-center justify-center order-1 bg-emerald-500 shadow-lg w-10 h-10 rounded-full">
-        <span className="font-semibold text-lg text-white">{index + 1}</span>
-      </div>
+      <div className="w-5/12" />
       <motion.div
-        className="order-1 bg-white rounded-xl shadow-lg w-5/12 px-6 py-5"
-        style={{ x }}
+        className="z-20 flex items-center justify-center bg-emerald-500 shadow-lg w-12 h-12 rounded-full"
+        style={{ scale: smoothProgress }}
+      >
+        <span className="font-semibold text-lg text-white">{index + 1}</span>
+      </motion.div>
+      <motion.div
+        className="bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/50 rounded-xl shadow-lg w-5/12 px-6 py-5 hover:shadow-xl transition-shadow"
+        style={{ x, scale }}
         whileHover={{ scale: 1.02 }}
-        transition={{ duration: 0.2 }}
+        transition={{ type: "spring", stiffness: 400, damping: 30 }}
       >
         <h3 className="mb-3 font-bold text-gray-900 text-xl flex items-center gap-3">
           {feature.icon}
@@ -159,40 +158,6 @@ function FeatureCard({ feature, index, active, total, scrollYProgress }: {
           <ArrowRight className="h-4 w-4" />
         </Button>
       </motion.div>
-
-      {/* <svg 
-        className={`absolute ${isEven ? 'left-1/2' : 'right-1/2'} h-32 w-[calc(50%-2.5rem)]`}
-        style={{ top: '50%', transform: 'translateY(-50%)' }}
-        viewBox="0 0 100 100"
-        preserveAspectRatio={isEven ? "xMinYMid meet" : "xMaxYMid meet"}
-      >
-        <motion.path
-          d={isEven 
-            ? "M 0,50 H 80 V 100" 
-            : "M 100,50 H 20 V 100"
-          }
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          className="text-emerald-500"
-          style={{
-            pathLength: lineSpring
-          }}
-        />
-        <motion.circle
-          cx={isEven ? "0" : "100"}
-          cy="50"
-          r="4"
-          fill="currentColor"
-          className="text-emerald-500"
-          style={{ 
-            x: isEven 
-              ? useTransform(lineSpring, [0, 0.5, 1], ["0%", "80%", "80%"]) 
-              : useTransform(lineSpring, [0, 0.5, 1], ["0%", "-80%", "-80%"]),
-            y: useTransform(lineSpring, [0, 0.5, 1], ["0%", "0%", "100%"])
-          }}
-        />
-      </svg> */}
     </motion.div>
   )
 }
