@@ -153,7 +153,7 @@ export const MonitoringDashboard = ({ appName = "Test App" }) => {
     }
 
     try {
-      const response = await fetch("http://localhost:3005/metrics", {
+      const response = await fetch("https://agile-sands-41265-3140fd0614b4.herokuapp.com/metrics", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
