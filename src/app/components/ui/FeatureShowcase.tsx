@@ -5,6 +5,7 @@ import { motion, useScroll, useSpring, useTransform } from 'framer-motion'
 import { Button } from "@/components/ui/button"
 import { ArrowRight, CheckCircle2 } from 'lucide-react'
 import CatIcon from '../icons/cat'
+import { useRouter } from 'next/navigation'
 
 interface Feature {
   title: string
@@ -96,6 +97,7 @@ function FeatureCard({ feature, index, total, scrollYProgress }: {
   total: number
   scrollYProgress: any
 }) {
+  const router = useRouter();
   const cardRef = useRef<HTMLDivElement>(null)
   const isEven = index % 2 === 0
 
@@ -121,6 +123,10 @@ function FeatureCard({ feature, index, total, scrollYProgress }: {
     [0, 1], 
     [isEven ? 50 : -50, 0]
   )
+
+  const handleLearnMoreClick = () => {
+    router.push('/about-us');
+  };
 
   return (
     <motion.div
@@ -153,6 +159,7 @@ function FeatureCard({ feature, index, total, scrollYProgress }: {
         <Button 
           variant="ghost" 
           className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 gap-2 pl-0"
+          onClick={handleLearnMoreClick}
         >
           Learn More 
           <ArrowRight className="h-4 w-4" />

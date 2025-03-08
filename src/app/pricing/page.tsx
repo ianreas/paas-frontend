@@ -2,13 +2,22 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import {
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
 import { GlassCard } from "@/app/components/ui/CustomCards"; // ← adjust import path as needed
+import { useRouter } from "next/navigation";
 
 export default function PricingPage() {
   // State to toggle between "developers" and "businesses"
-  const [activeTier, setActiveTier] = useState<"developers" | "businesses">("developers");
+  const [activeTier, setActiveTier] = useState<"developers" | "businesses">(
+    "developers"
+  );
 
+  const router = useRouter();
   return (
     <div
       className="min-h-screen w-full px-4 py-12 md:py-20"
@@ -25,7 +34,8 @@ export default function PricingPage() {
           Pricing
         </motion.h1>
         <p className="mt-3 text-gray-700 text-base md:text-lg">
-          Find the perfect plan—whether you’re an individual developer or an enterprise team.
+          Find the perfect plan—whether you’re an individual developer or an
+          enterprise team.
         </p>
       </div>
 
@@ -73,7 +83,8 @@ export default function PricingPage() {
                   Meow Cloud
                 </CardTitle>
                 <CardDescription className="text-gray-700 text-sm md:text-base">
-                  Metered billing based on resource usage, pro-rated to the minute.
+                  Metered billing based on resource usage, pro-rated to the
+                  minute.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -93,6 +104,9 @@ export default function PricingPage() {
                     className="flex-1 py-3 px-5 rounded-lg font-medium 
                                bg-emerald-600 hover:bg-emerald-700 text-white
                                transition-colors duration-200"
+                    onClick={() => {
+                      router.push("/contact-us");
+                    }}
                   >
                     Try Meow Cloud
                   </motion.button>
@@ -102,6 +116,9 @@ export default function PricingPage() {
                     className="flex-1 py-3 px-5 rounded-lg font-medium 
                                bg-white/40 hover:bg-white/50 text-gray-800
                                transition-colors duration-200"
+                    onClick={() => {
+                      router.push("/contact-us");
+                    }}
                   >
                     Learn More
                   </motion.button>
@@ -146,7 +163,9 @@ export default function PricingPage() {
                     <p className="text-xl text-gray-800">
                       $13 <span className="text-sm">per vCPU / mo</span>
                     </p>
-                    <p className="text-gray-600 text-sm">Underlying cloud costs not included</p>
+                    <p className="text-gray-600 text-sm">
+                      Underlying cloud costs not included
+                    </p>
                   </div>
                   <div>
                     <motion.button
@@ -154,6 +173,9 @@ export default function PricingPage() {
                       whileTap={{ scale: 0.98 }}
                       className="w-full py-3 px-5 rounded-lg font-medium bg-emerald-600 hover:bg-emerald-700 
                                  text-white transition-colors duration-200"
+                      onClick={() => {
+                        router.push("/contact-us");
+                      }}
                     >
                       Get Started
                     </motion.button>
@@ -183,13 +205,18 @@ export default function PricingPage() {
                     Enterprise
                   </CardTitle>
                   <CardDescription className="text-gray-700 text-sm md:text-base">
-                    For companies running at scale. Enjoy volume discounts with enterprise-grade support.
+                    For companies running at scale. Enjoy volume discounts with
+                    enterprise-grade support.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="flex-1 flex flex-col justify-between space-y-6">
                   <div>
-                    <p className="text-lg font-semibold text-gray-800">Volume Discounts</p>
-                    <p className="text-sm text-gray-600">Starting at 40 vCPU, 80GB RAM</p>
+                    <p className="text-lg font-semibold text-gray-800">
+                      Volume Discounts
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      Starting at 40 vCPU, 80GB RAM
+                    </p>
                   </div>
                   <div>
                     <motion.button
@@ -197,6 +224,9 @@ export default function PricingPage() {
                       whileTap={{ scale: 0.98 }}
                       className="w-full py-3 px-5 rounded-lg font-medium bg-white/40 hover:bg-white/50 
                                  text-gray-800 transition-colors duration-200"
+                      onClick={() => {
+                        router.push("/contact-us");
+                      }}
                     >
                       Talk to Sales
                     </motion.button>

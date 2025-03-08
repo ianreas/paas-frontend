@@ -111,7 +111,7 @@ export function RepoSelector({ fetchApplications }: { fetchApplications: () => v
         memoryAllocation: memoryAllocation,
       };
 
-      const apiUrl = "http://localhost:3005/build-and-push-deploy";
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/build-and-push-deploy`;
 
       const response = await fetch(apiUrl, {
         method: "POST",
@@ -181,11 +181,11 @@ export function RepoSelector({ fetchApplications }: { fetchApplications: () => v
                       <SelectValue placeholder="Select a repository" />
                     </SelectTrigger>
                     <SelectContent>
-                      {repos.map((repo) => (
+                      {repos ? repos?.map((repo) => (
                         <SelectItem key={repo.id} value={repo.full_name}>
                           {repo.full_name}
                         </SelectItem>
-                      ))}
+                      )) : <SelectItem value="No repositories found">No repositories found</SelectItem>}
                     </SelectContent>
                   </Select>
                 </div>

@@ -19,18 +19,21 @@ const createWorkflow = async (
   console.log(`sessionToken: ${sessionToken}`);
   console.log(`githubUsername: ${githubUsername}`);
   console.log(`repoName: ${repoName}`);
-  const response = await fetch("http://localhost:3005/create-workflow", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      repoOwner: githubUsername,
-      repoName: repoName,
-      accessToken: sessionToken,
-      baseBranch: "main",
-    }),
-  });
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/create-workflow`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        repoOwner: githubUsername,
+        repoName: repoName,
+        accessToken: sessionToken,
+        baseBranch: "main",
+      }),
+    }
+  );
 
   console.log(`response: ${JSON.stringify(response)}`);
 

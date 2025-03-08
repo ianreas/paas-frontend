@@ -361,7 +361,7 @@ export default function LogViewer({ appName }: LogViewerProps) {
     });
 
     const eventSource = new EventSource(
-      `https://agile-sands-41265-3140fd0614b4.herokuapp.com/logs/${appName}?${params.toString()}`
+      `${process.env.NEXT_PUBLIC_API_URL}/logs/${appName}?${params.toString()}`
     );
 
     eventSource.addEventListener("log", (e: MessageEvent) => {

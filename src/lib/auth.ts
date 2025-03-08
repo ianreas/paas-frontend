@@ -3,7 +3,7 @@
 // import GoogleProvider from "next-auth/providers/google"
 
 // export const authOptions: NextAuthOptions = {
-//     // figure out the process.env later 
+//     // figure out the process.env later
 //   providers: [
 //     GoogleProvider({
 //       clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? "",
@@ -13,7 +13,6 @@
 //   ],
 //   // Add any other NextAuth.js configurations here
 // };
-
 
 // src/lib/auth.ts
 import { NextAuthOptions } from "next-auth";
@@ -61,8 +60,10 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
     }),
     GithubProvider({
-      clientId: process.env.GITHUB_CLIENT_ID ?? "",
-      clientSecret: process.env.GITHUB_CLIENT_SECRET ?? "",
+      clientId: "Ov23liC1xIBbylN1Rxt3", //process.env.GITHUB_CLIENT_ID ??,
+      clientSecret: "9e1a27017ed7b774dd6f9b0a2bb644b439b4b615",
+      //    process.env.GITHUB_CLIENT_SECRET ??
+
       authorization: {
         params: {
           scope: "read:user user:email repo",
@@ -98,7 +99,12 @@ export const authOptions: NextAuthOptions = {
           }
           await pool.query(
             "INSERT INTO github_accounts (github_id, github_username, github_pfp, user_id) VALUES ($1, $2, $3, $4) ON CONFLICT (github_id) DO UPDATE SET github_username = $2, github_pfp = $3",
-            [account.providerAccountId, profile?.name, profile?.image, rows[0].id]
+            [
+              account.providerAccountId,
+              profile?.name,
+              profile?.image,
+              rows[0].id,
+            ]
           );
           await pool.query(
             "UPDATE users SET github_username = $1 WHERE id = $2",
@@ -131,7 +137,9 @@ export const authOptions: NextAuthOptions = {
       session.user.id = token.id as string;
       session.user.username = token.username as string;
       session.user.githubUsername = token.githubUsername as string | undefined;
-      session.user.googleAccountId = token.googleAccountId as string | undefined;
+      session.user.googleAccountId = token.googleAccountId as
+        | string
+        | undefined;
       session.accessToken = token.accessToken as string;
       return session;
     },

@@ -180,18 +180,27 @@ export default function DeploymentDetails() {
 
       console.log("Request Data:", requestData);
 
-      const apiUrl = "http://localhost:3005/build-and-push-deploy";
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/build-and-push-deploy`;
 
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          // "Accept": "application/json",
+          // // Add CORS headers
+          // "Access-Control-Allow-Origin": "*",
+          // "Access-Control-Allow-Methods": "POST, OPTIONS",
+          // "Access-Control-Allow-Headers": "Content-Type",
         },
+        //credentials: "include", // Include credentials if you're using cookies
+       // mode: "cors", // Explicitly set CORS mode
         body: JSON.stringify(requestData),
-      });
+      });;
 
       if (!response.ok) {
         const errorData = await response.json();
+
+        console.error(errorData)
         throw new Error(errorData.message || "Failed to modify deployment.");
       }
 
@@ -318,7 +327,7 @@ export default function DeploymentDetails() {
           </div>
         </CardContent>
       </GlassCard>
-    )
+    );
   }
 
   return (
