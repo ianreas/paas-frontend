@@ -126,6 +126,39 @@ export default function DeploymentDetails() {
   }, [id, toast]);
 
   const handleEditToggle = (field: string) => {
+    // If we're turning off editing (canceling), reset the value to original
+    if (isEditing[field as keyof typeof isEditing] && application) {
+      // Reset the specific field value to the original
+      setEditedValues((prev) => {
+        const newValues = {
+          ...prev,
+          [field]:
+            field === "containerPort"
+              ? application.container_port
+              : field === "replicas"
+              ? application.replicas
+              : field === "cpuAllocation"
+              ? application.requested_cpu
+              : field === "memoryAllocation"
+              ? application.requested_memory
+              : prev[field as keyof typeof prev],
+        };
+
+        // Check if any field is still modified
+        const stillModified =
+          newValues.containerPort !== application.container_port ||
+          newValues.replicas !== application.replicas ||
+          newValues.cpuAllocation !== application.requested_cpu ||
+          newValues.memoryAllocation !== application.requested_memory;
+
+        // Update isModified state
+        setIsModified(stillModified);
+
+        return newValues;
+      });
+    }
+
+    // Toggle edit mode
     setIsEditing((prevState) => ({
       ...prevState,
       [field]: !prevState[field as keyof typeof prevState],
@@ -133,18 +166,21 @@ export default function DeploymentDetails() {
   };
 
   const handleInputChange = (field: string, value: any) => {
-    setEditedValues((prevState) => ({
-      ...prevState,
+    // Create a new object with the updated values
+    const newValues = {
+      ...editedValues,
       [field]: value,
-    }));
+    };
 
-    // Check if any field has been modified
+    setEditedValues(newValues);
+
+    // Check if any field has been modified using the new values
     if (application) {
       const isModified =
-        editedValues.containerPort !== application.container_port ||
-        editedValues.replicas !== application.replicas ||
-        editedValues.cpuAllocation !== application.requested_cpu ||
-        editedValues.memoryAllocation !== application.requested_memory;
+        newValues.containerPort !== application.container_port ||
+        newValues.replicas !== application.replicas ||
+        newValues.cpuAllocation !== application.requested_cpu ||
+        newValues.memoryAllocation !== application.requested_memory;
       setIsModified(isModified);
     }
   };
@@ -180,7 +216,14 @@ export default function DeploymentDetails() {
 
       console.log("Request Data:", requestData);
 
-      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/build-and-push-deploy`;
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
+      if (!apiBaseUrl) {
+        throw new Error(
+          "API URL is not configured. Check environment variables."
+        );
+      }
+
+      const apiUrl = `${apiBaseUrl}/build-and-push-deploy`;
 
       const response = await fetch(apiUrl, {
         method: "POST",
@@ -193,14 +236,14 @@ export default function DeploymentDetails() {
           // "Access-Control-Allow-Headers": "Content-Type",
         },
         //credentials: "include", // Include credentials if you're using cookies
-       // mode: "cors", // Explicitly set CORS mode
+        // mode: "cors", // Explicitly set CORS mode
         body: JSON.stringify(requestData),
-      });;
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
 
-        console.error(errorData)
+        console.error(errorData);
         throw new Error(errorData.message || "Failed to modify deployment.");
       }
 
