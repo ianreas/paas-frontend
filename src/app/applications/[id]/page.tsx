@@ -1,9 +1,8 @@
 "use client";
 
+import { GlassCard } from "@/app/components/ui/CustomCards";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -11,45 +10,31 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Clock,
+  Gauge,
+  GitBranch,
+  LineChart,
+  MapPin,
+  RotateCw,
+  ScrollText,
+  Server,
+} from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Application } from "../page";
-import LogViewer from "./components/LogViewer";
-import CronJobs from "./components/CronJobs";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { GlassCard } from "@/app/components/ui/CustomCards";
-import { motion } from "framer-motion";
-import {
-  Cloud,
-  Server,
-  Cpu,
-  GitBranch,
-  User,
-  MemoryStick,
-  RotateCw,
-  ScrollText,
-  Clock,
-  LineChart,
-  Gauge,
-  MapPin,
-} from "lucide-react";
-import MonitoringDashboard from "./components/SystemMetrics";
-import { Switch } from "@/components/ui/switch";
 import AdvancedOptimization from "./components/AdvancedOptimization";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-} from "@/components/ui/tooltip";
-import { TooltipTrigger } from "@radix-ui/react-tooltip";
-import DeploymentDetails from "./components/DeploymentDetails";
-import { Skeleton } from "@/components/ui/skeleton";
-import ServiceMap from "./components/ServiceMap";
 import CICDViewer from "./components/CICD";
+import CronJobs from "./components/CronJobs";
+import DeploymentDetails from "./components/DeploymentDetails";
+import LogViewer from "./components/LogViewer";
+import MonitoringDashboard from "./components/SystemMetrics";
 import ClusterVisualizer from "./components/TopologyMap";
-import KubernetesTopology from "./components/KubernetesTopology";
+//import KubernetesTopology from "./components/KubernetesTopology";
 
 type CPUResource =
   | "100m"
@@ -304,7 +289,7 @@ export default function ApplicationDetails() {
             <AdvancedOptimization />
           </TabsContent>
           <TabsContent value="service-map">
-            <KubernetesTopology namespace={application.user_id.toString()} />
+            <ClusterVisualizer />
           </TabsContent>
           <TabsContent value="cicd">
             <CICDViewer appName={application.project_name} />

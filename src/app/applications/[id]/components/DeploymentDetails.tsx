@@ -1,7 +1,8 @@
 "use client";
 
+import { GlassCard } from "@/app/components/ui/CustomCards";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -11,34 +12,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
+import { motion } from "framer-motion";
+import { Cloud, Cpu, GitBranch, MemoryStick, Server, User } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { GlassCard } from "@/app/components/ui/CustomCards";
-import { motion } from "framer-motion";
-import {
-  Cloud,
-  Server,
-  Cpu,
-  GitBranch,
-  User,
-  MemoryStick,
-  RotateCw,
-  ScrollText,
-  Clock,
-  LineChart,
-} from "lucide-react";
-import { Switch } from "@/components/ui/switch";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-} from "@/components/ui/tooltip";
-import { TooltipTrigger } from "@radix-ui/react-tooltip";
 import { Application } from "../../page";
-import { Skeleton } from "@/components/ui/skeleton";
 
 type CPUResource =
   | "100m"
