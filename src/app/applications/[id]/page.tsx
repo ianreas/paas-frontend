@@ -48,6 +48,7 @@ import DeploymentDetails from "./components/DeploymentDetails";
 import { Skeleton } from "@/components/ui/skeleton";
 import ServiceMap from "./components/ServiceMap";
 import CICDViewer from "./components/CICD";
+import ClusterVisualizer from "./components/TopologyMap";
 
 type CPUResource =
   | "100m"
@@ -302,7 +303,8 @@ export default function ApplicationDetails() {
             <AdvancedOptimization />
           </TabsContent>
           <TabsContent value="service-map">
-            <ServiceMap namespace={application.user_id.toString()} />
+            {/* <ServiceMap namespace={application.user_id.toString()} /> */}
+            <ClusterVisualizer/>
           </TabsContent>
           <TabsContent value="cicd">
             <CICDViewer appName={application.project_name} />
