@@ -16,11 +16,9 @@
 
 // src/lib/auth.ts
 import { NextAuthOptions } from "next-auth";
+import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
-import GithubProvider, { GithubProfile } from "next-auth/providers/github";
 import { Pool } from "pg";
-import { NextApiRequest, NextApiResponse } from "next";
-import { AdapterUser } from "next-auth/adapters";
 
 declare module "next-auth" {
   interface Session {
@@ -56,12 +54,19 @@ const pool = new Pool({
 export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+      clientId: process.env.GOOGLE_ID!,
+      clientSecret: process.env.GOOGLE_SECRET!,
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code",
+        },
+      },
     }),
     GithubProvider({
-      clientId: process.env.GITHUB_CLIENT_ID ?? "",
-      clientSecret: process.env.GITHUB_CLIENT_SECRET ?? "",
+      clientId: process.env.GITHUB_ID!,
+      clientSecret: process.env.GITHUB_SECRET!,
       authorization: {
         params: {
           scope: "read:user user:email repo",
@@ -71,6 +76,13 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async signIn({ user, account, profile }) {
+      console.log("Sign-in attempt:", {
+        user,
+        accountProvider: account?.provider,
+        profileEmail: profile?.email,
+        redirectUrl: process.env.NEXTAUTH_URL,
+      });
+
       if (account?.provider === "google") {
         try {
           const { rows } = await pool.query(
@@ -87,7 +99,7 @@ export const authOptions: NextAuthOptions = {
         }
       } else if (account?.provider === "github") {
         try {
-          const githubProfile = profile as GithubProfile;
+          const githubProfile = profile as any;
           const { rows } = await pool.query(
             "SELECT * FROM users WHERE email = $1",
             [user.email]
@@ -119,7 +131,7 @@ export const authOptions: NextAuthOptions = {
       }
       return false;
     },
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, profile }) {
       if (user) {
         token.id = user.id;
         token.username = user.username;
@@ -132,17 +144,19 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      session.user.id = token.id as string;
-      session.user.username = token.username as string;
-      session.user.githubUsername = token.githubUsername as string | undefined;
-      session.user.googleAccountId = token.googleAccountId as
-        | string
-        | undefined;
-      session.accessToken = token.accessToken as string;
+      if (session.user) {
+        (session.user as any).id = token.id;
+        (session.user as any).username = token.username;
+        (session.user as any).githubUsername = token.githubUsername;
+        (session.user as any).googleAccountId = token.googleAccountId;
+        session.accessToken = token.accessToken as string;
+      }
       return session;
     },
   },
   pages: {
     signIn: "/auth/signin",
+    error: "/auth/error",
   },
+  debug: true,
 };

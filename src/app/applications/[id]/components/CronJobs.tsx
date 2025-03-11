@@ -18,8 +18,10 @@ import {
   MemoryStick,
   Copy,
   Trash2,
+  Loader2,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useSession } from "next-auth/react";
 
 interface CronJobFromDB {
   id: number;
@@ -42,21 +44,66 @@ interface NewCronJob {
 }
 
 export default function CronJobs({ applicationId }: { applicationId: number }) {
+  const { data: session, status } = useSession();
   const [cronJobs, setCronJobs] = useState<CronJobFromDB[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   const [newCronJob, setNewCronJob] = useState<NewCronJob | null>(null);
 
   useEffect(() => {
-    fetch(`/api/cron-jobs?application_id=${applicationId}`)
-      .then((response) => response.json())
-      .then((data) => setCronJobs(data.cronJobs));
-  }, [applicationId]);
+    if (status === "loading") return;
+
+    if (!session) {
+      setError("Please sign in to view cron jobs");
+      setIsLoading(false);
+      return;
+    }
+
+    const fetchCronJobs = async () => {
+      try {
+        const response = await fetch(`/api/cron-jobs?application_id=${applicationId}`);
+        if (!response.ok) {
+          throw new Error(`Error: ${response.statusText}`);
+        }
+        const data = await response.json();
+        setCronJobs(data.cronJobs);
+      } catch (error) {
+        console.error("Failed to fetch cron jobs:", error);
+        setError("Failed to load cron jobs");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCronJobs();
+  }, [applicationId, session, status]);
 
   const handleAddCronJob = () => {
     console.log("Add Cron Job");
     setIsPopoverOpen(false);
   };
+
+  if (isLoading) {
+    return (
+      <GlassCard>
+        <CardContent className="flex items-center justify-center py-8">
+          <Loader2 className="h-6 w-6 animate-spin" />
+        </CardContent>
+      </GlassCard>
+    );
+  }
+
+  if (error) {
+    return (
+      <GlassCard>
+        <CardContent className="text-center py-8 text-red-500">
+          {error}
+        </CardContent>
+      </GlassCard>
+    );
+  }
 
   return (
     <GlassCard>
@@ -223,84 +270,5 @@ export default function CronJobs({ applicationId }: { applicationId: number }) {
         </div>
       </CardContent>
     </GlassCard>
-    // <div>
-    //   <GlassCard>
-    //     <CardHeader>Cron Jobs</CardHeader>
-    //     <CardContent>
-    //       <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-    //         <PopoverTrigger>
-    //           <Button onClick={() => setIsPopoverOpen(true)}>
-    //             Add Cron Job
-    //           </Button>
-    //         </PopoverTrigger>
-    //         <PopoverContent className="w-80">
-    //           <div className="grid gap-4">
-    //             <div className="space-y-2">
-    //               <h4 className="font-medium leading-none">Cron Job Details</h4>
-    //               <p className="text-sm text-muted-foreground">
-    //                 Set the details for the cron job.
-    //               </p>
-    //             </div>
-    //             <div className="grid gap-2">
-    //               <div className="grid grid-cols-3 items-center gap-4">
-    //                 <Label htmlFor="name">Name*</Label>
-    //                 <Input
-    //                   id="name"
-    //                   className="col-span-2 h-8"
-    //                 />
-    //               </div>
-    //               <div className="grid grid-cols-3 items-center gap-4">
-    //                 <Label htmlFor="cronExpression">Cron Expression*</Label>
-    //                 <Input
-    //                   id="cronExpression"
-    //                   defaultValue="300px"
-    //                   className="col-span-2 h-8"
-    //                 />
-    //               </div>
-    //               <div className="grid grid-cols-3 items-center gap-4">
-    //                 <Label htmlFor="replicas">Replicas</Label>
-    //                 <Input
-    //                   id="replicas"
-    //                   defaultValue="1"
-    //                   className="col-span-2 h-8"
-    //                 />
-    //               </div>
-    //               <div className="grid grid-cols-3 items-center gap-4">
-    //                 <Label htmlFor="requestedMemory">Requested Memory</Label>
-    //                 <Input
-    //                   id="requestedMemory"
-    //                   defaultValue="1"
-    //                   className="col-span-2 h-8"
-    //                 />
-    //               </div>
-    //               <div className="grid grid-cols-3 items-center gap-4">
-    //                 <Label htmlFor="requestedCpu">Requested CPU</Label>
-    //                 <Input
-    //                   id="requestedCpu"
-    //                   defaultValue="1"
-    //                   className="col-span-2 h-8"
-    //                 />
-    //               </div>
-    //               <Button onClick={handleAddCronJob}>Add</Button>
-    //             </div>
-    //           </div>
-    //         </PopoverContent>
-    //       </Popover>
-    //       {cronJobs.map((cronJob) => (
-    //         <div key={cronJob.id} className="mb-4">
-    //           <h3>
-    //             <Link href={`/applications/${applicationId}/${cronJob.id}`}>
-    //               {cronJob.name}
-    //             </Link>
-    //           </h3>
-    //           <p>{cronJob.cron_expression}</p>
-    //           <p>{cronJob.replicas}</p>
-    //           <p>{cronJob.requested_memory}</p>
-    //           <p>{cronJob.requested_cpu}</p>
-    //         </div>
-    //       ))}
-    //     </CardContent>
-    //   </GlassCard>
-    // </div>
   );
 }

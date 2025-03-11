@@ -1,16 +1,17 @@
-'use client';
+"use client";
 //export const dynamic = 'force-dynamic';
 
-
-import { Suspense } from 'react';
-import { useEffect, useState } from 'react';
+import { GlassCard } from "@/app/components/ui/CustomCards";
+import { Button } from "@/components/ui/button";
+import {
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { getProviders, signIn, useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { GlassCard } from '@/app/components/ui/CustomCards';
-
-
+import { Suspense, useEffect, useState } from "react";
 
 // function SignInContent() {
 //   const { data: session } = useSession();
@@ -37,7 +38,7 @@ import { GlassCard } from '@/app/components/ui/CustomCards';
 //     return <div>Loading...</div>;
 //   }
 
-//   const filteredProviders = isGithubOnly 
+//   const filteredProviders = isGithubOnly
 //     ? Object.values(providers).filter((provider: any) => provider.id === 'github')
 //     : Object.values(providers);
 
@@ -72,7 +73,8 @@ function SignInContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [providers, setProviders] = useState(null);
-  const isGithubConnection = searchParams.get('github') === 'true';
+  const [isLoading, setIsLoading] = useState(false);
+  const isGithubConnection = searchParams.get("github") === "true";
 
   useEffect(() => {
     const fetchProviders = async () => {
@@ -83,41 +85,63 @@ function SignInContent() {
   }, []);
 
   useEffect(() => {
-    // Only redirect if user is signed in and not trying to connect GitHub
     if (session && !isGithubConnection) {
-      router.push('/');
+      router.push("/");
     }
   }, [session, router, isGithubConnection]);
 
+  const handleSignIn = async (providerId: string) => {
+    try {
+      setIsLoading(true);
+      const callbackUrl = `${window.location.origin}/`;
+      await signIn(providerId, {
+        callbackUrl,
+        redirect: true,
+      });
+    } catch (error) {
+      console.error("Sign in error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   if (!providers) {
-    return <div className="mx-auto bg-[#A4FBAD] min-h-screen flex items-center justify-center"></div>;
+    return (
+      <div className="mx-auto bg-[#A4FBAD] min-h-screen flex items-center justify-center">
+        <div>Loading providers...</div>
+      </div>
+    );
   }
 
   return (
     <div className="mx-auto bg-[#A4FBAD] min-h-screen flex items-center justify-center">
       <GlassCard>
         <CardHeader>
-          <CardTitle>{isGithubConnection ? 'Connect GitHub' : 'Sign In'}</CardTitle>
+          <CardTitle>
+            {isGithubConnection ? "Connect GitHub" : "Sign In"}
+          </CardTitle>
           <CardDescription>
-            {isGithubConnection 
-              ? 'Connect your GitHub account to enable repository access'
-              : 'Sign in with your Google account'}
+            {isGithubConnection
+              ? "Connect your GitHub account to enable repository access"
+              : "Sign in with your Google account"}
           </CardDescription>
         </CardHeader>
         <CardContent>
           {isGithubConnection ? (
             <Button
-              onClick={() => signIn('github', { callbackUrl: '/' })}
+              onClick={() => handleSignIn("github")}
               className="w-full"
+              disabled={isLoading}
             >
-              Connect GitHub Account
+              {isLoading ? "Connecting..." : "Connect GitHub Account"}
             </Button>
           ) : (
             <Button
-              onClick={() => signIn('google', { callbackUrl: '/',  redirect: true, })}
+              onClick={() => handleSignIn("google")}
               className="w-full"
+              disabled={isLoading}
             >
-              Sign in with Google
+              {isLoading ? "Signing in..." : "Sign in with Google"}
             </Button>
           )}
         </CardContent>
@@ -125,7 +149,6 @@ function SignInContent() {
     </div>
   );
 }
-
 
 export default function SignIn() {
   return (

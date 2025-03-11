@@ -1,36 +1,74 @@
 import { authOptions } from "@/lib/auth";
-import pool from "@/lib/db";
-import { getServerSession } from "next-auth";
-import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth/next";
+import { NextResponse } from "next/server";
+import { Pool } from "pg";
 
-export async function GET(req: NextRequest) {
-  const session = await getServerSession(authOptions);
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false,
+  },
+});
 
-  console.log("the full session object" + JSON.stringify(session, null, 2));
-
-  if (!session?.user.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const { searchParams } = new URL(req.url);
-  const applicationId = searchParams.get("application_id");
-
+export async function GET(request: Request) {
   try {
-    const query = `
-        SELECT * FROM cron_jobs
-        WHERE application_id = $1`;
+    // Check authentication
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return new NextResponse(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
-    const values = [applicationId];
+    // Get application_id from URL params
+    const { searchParams } = new URL(request.url);
+    const applicationId = searchParams.get("application_id");
 
-    const result = await pool.query(query, values);
+    if (!applicationId) {
+      return new NextResponse(
+        JSON.stringify({ error: "Application ID required" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
 
-    const cronJobs = result.rows;
-    return NextResponse.json({ cronJobs });
+    // Verify user has access to this application
+    const { rows: appRows } = await pool.query(
+      "SELECT * FROM applications WHERE id = $1 AND user_id = $2",
+      [applicationId, session.user.id]
+    );
+
+    if (appRows.length === 0) {
+      return new NextResponse(
+        JSON.stringify({ error: "Not authorized to access this application" }),
+        {
+          status: 403,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // Fetch cron jobs
+    const { rows } = await pool.query(
+      "SELECT * FROM cron_jobs WHERE application_id = $1",
+      [applicationId]
+    );
+
+    return new NextResponse(JSON.stringify({ cronJobs: rows }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (error) {
-    console.error("Error fetching cron jobs", error);
-    return NextResponse.json(
-      { error: "Failed to fetch cron jobs" },
-      { status: 500 }
+    console.error("Error fetching cron jobs:", error);
+    return new NextResponse(
+      JSON.stringify({ error: "Internal Server Error" }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
     );
   }
 }
